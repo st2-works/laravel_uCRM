@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Item;
+
+use App\Models\Item; //Itemモデルのインポート
 use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemRequest;
+use Inertia\Inertia;
 
 class ItemController extends Controller
 {
@@ -13,7 +15,11 @@ class ItemController extends Controller
      */
     public function index()
     {
-        //
+        //一覧画面を表示
+        return Inertia::render('Items/Index', [
+        'items' => Item::select('id', 'name', 'price','is_selling')
+        ->get()
+        ]);
     }
 
     /**
@@ -21,7 +27,8 @@ class ItemController extends Controller
      */
     public function create()
     {
-        //
+        //登録画面を表示
+        return Inertia::render('Items/Create');
     }
 
     /**
@@ -29,7 +36,20 @@ class ItemController extends Controller
      */
     public function store(StoreItemRequest $request)
     {
-        //
+        //データを登録
+        Item::create([
+            'name' => $request->name,
+            'memo' => $request->memo,
+            'price' => $request->price,
+        ]);
+
+        //登録後に一覧ページにリダイレクト
+        return to_route('items.index')
+        //登録後にフラッシュメッセージを表示
+        ->with([
+            'message' => '登録しました。',
+            'status' => 'success'
+        ]);
     }
 
     /**
@@ -37,7 +57,11 @@ class ItemController extends Controller
      */
     public function show(Item $item)
     {
-        //
+        //dd($item);
+        // itemモデルの全データを取得
+        return Inertia::render('Items/Show', [
+            'item' => $item
+        ]);
     }
 
     /**
@@ -45,7 +69,10 @@ class ItemController extends Controller
      */
     public function edit(Item $item)
     {
-        //
+        // itemモデルの全データを取得
+        return Inertia::render('Items/Edit', [
+            'item' => $item
+        ]);
     }
 
     /**
@@ -53,7 +80,9 @@ class ItemController extends Controller
      */
     public function update(UpdateItemRequest $request, Item $item)
     {
-        //
+        //dd($item->name, $request->name);
+
+
     }
 
     /**
@@ -61,6 +90,15 @@ class ItemController extends Controller
      */
     public function destroy(Item $item)
     {
-        //
+        $item->delete();
+
+        //削除後に一覧ページにリダイレクト
+        return to_route('items.index')
+        //削除後にフラッシュメッセージを表示
+        ->with([
+            'message' => '削除しました。',
+            'status' => 'danger'
+        ]);
+
     }
 }
