@@ -16,6 +16,7 @@ const form = reactive({
     is_selling: props.item.is_selling
 });
 
+//ItemControllerのupdateメソッドを呼び出す
 const updateItem = id =>{
   Inertia.put(route('items.update', { item: id}), form)
 }
